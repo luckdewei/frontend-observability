@@ -2,6 +2,8 @@
 
 前端可观测性（Frontend Observability）平台 —— 自托管的错误监控、性能分析与 rrweb 会话回放系统。
 
+**GitHub 仓库：** https://github.com/luckdewei/frontend-observability
+
 ## 功能概览
 
 | 模块 | 能力 |
