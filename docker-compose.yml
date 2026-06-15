@@ -1,0 +1,24 @@
+# 前端可观测性平台 - 本地开发基础设施
+# 用法: docker compose up -d
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: fe-observability-pg
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: frontend_observability
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pg_data:

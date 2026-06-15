@@ -1,0 +1,39 @@
+# 依赖
+node_modules/
+.pnp
+.pnp.js
+
+# 构建产物
+dist/
+build/
+*.tsbuildinfo
+
+# 环境变量
+.env
+.env.local
+.env.*.local
+
+# 日志
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# 测试
+coverage/
+test-results/
+playwright-report/
+blob-report/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Prisma
+packages/server/prisma/migrations/**/migration_lock.toml
+
+# Vite
+*.local

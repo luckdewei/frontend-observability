@@ -1,0 +1,30 @@
+{
+  "name": "frontend-observability",
+  "version": "1.0.0",
+  "private": true,
+  "description": "前端可观测性平台 monorepo",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build:sdk": "npm run build -w @frontend-observability/sdk",
+    "build:server": "npm run build -w @frontend-observability/server",
+    "build:demo": "npm run build -w @frontend-observability/demo",
+    "build:dashboard": "npm run build -w @frontend-observability/dashboard",
+    "build": "npm run build:sdk && npm run build:server && npm run build:demo && npm run build:dashboard",
+    "dev:server": "npm run start:dev -w @frontend-observability/server",
+    "dev:demo": "npm run dev -w @frontend-observability/demo",
+    "dev:dashboard": "npm run dev -w @frontend-observability/dashboard",
+    "dev": "concurrently -n server,demo -c blue,green \"npm run dev:server\" \"npm run dev:demo\"",
+    "dev:all": "concurrently -n server,demo,dash -c blue,green,yellow \"npm run dev:server\" \"npm run dev:demo\" \"npm run dev:dashboard\"",
+    "test:sdk": "npm run test -w @frontend-observability/sdk",
+    "test:e2e": "playwright test -c e2e/playwright.config.ts",
+    "test:e2e:ui": "playwright test -c e2e/playwright.config.ts --ui",
+    "postinstall": "npm run build:sdk"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.1",
+    "concurrently": "^9.1.0"
+  }
+}
