@@ -1,0 +1,45 @@
+// Prisma 数据源配置
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 监控事件类型枚举
+enum EventType {
+  ERROR       // 错误事件
+  PERFORMANCE // 性能事件
+  REPLAY      // 会话回放事件
+}
+
+// 项目模型 - 每个前端应用对应一个项目
+model Project {
+  id        String         @id @default(uuid())
+  name      String
+  appKey    String         @unique // 用于 SDK 鉴权的应用密钥
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  events    MonitorEvent[]
+}
+
+// 监控事件模型 - 存储 SDK 上报的各类事件
+model MonitorEvent {
+  id        String    @id @default(uuid())
+  projectId String
+  type      EventType
+  payload   Json      // 事件详细数据（JSON 格式）
+  sessionId String?   // 会话 ID
+  userId    String?   // 用户 ID
+  url       String?   // 页面 URL
+  userAgent String?   // 浏览器 User-Agent
+  createdAt DateTime  @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([type])
+  @@index([createdAt])
+}
