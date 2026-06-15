@@ -121,3 +121,13 @@ feat/XX-xxx
 - 子 Agent 之间不直接合并代码，统一由主 Agent 调度
 - 所有接口变更必须同步更新 `docs/api.md`
 - 上下文通过文档留痕，避免口头传递丢失
+
+## Cursor Cloud specific instructions
+
+This is an npm-workspaces monorepo. The update script runs `npm install` (its `postinstall` builds the SDK via tsup) and `prisma generate` for the server. Standard commands live in `README.md`, `package.json`, and `docs/deployment.md`; the notes below cover only non-obvious caveats.
+
+- **PostgreSQL is required and does NOT auto-start.** It is installed natively (not Docker — `docker` is unavailable here, ignore `docker compose up` in the README). Start it each session with `sudo service postgresql start` (or `sudo pg_ctlcluster 16 main start`). The `postgres`/`postgres` role and `frontend_observability` database already exist and match `packages/server/.env`.
+- **Server env file**: `packages/server/.env` must exist (copy from `.env.example`). If the DB is freshly reset, recreate schema + seed from `packages/server`: `npx prisma db push` then `npx prisma db seed` (seed creates project `appKey=demo-app-key`).
+- **Services / ports**: server `http://localhost:3000/api`, demo site `http://localhost:5174`, dashboard `http://localhost:5173`. Run all three with `npm run dev:all`, or just server+demo with `npm run dev`. The `/api/ingest` endpoint requires an `X-App-Key` header (the SDK sends it automatically).
+- **Lint is not actually wired up**: `npm run lint -w @frontend-observability/server` calls `eslint`, but eslint is not a dependency and there is no eslint config, so it fails with "eslint: not found". This is a repo gap, not an environment problem.
+- **No server unit tests**: `npm run test -w @frontend-observability/server` exits non-zero ("No tests found"). The real integration coverage is the Playwright e2e suite: `npm run test:e2e` (auto-starts server + demo via its `webServer` config). Run `npx playwright install --with-deps chromium` once if the browser is missing.
