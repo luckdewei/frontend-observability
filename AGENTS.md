@@ -121,3 +121,12 @@ feat/XX-xxx
 - 子 Agent 之间不直接合并代码，统一由主 Agent 调度
 - 所有接口变更必须同步更新 `docs/api.md`
 - 上下文通过文档留痕，避免口头传递丢失
+
+## Cursor Cloud specific instructions
+
+Cloud Agents use the saved environment `install` and `start` scripts. Docker is not required on the default image.
+
+- Install with `npm ci` at the repository root. `package-lock.json` is the lockfile. `pnpm-workspace.yaml` only mirrors workspace globs. The root `postinstall` builds `@frontend-observability/sdk`.
+- PostgreSQL 16 comes from the `postgresql` apt package. Start it with `sudo pg_ctlcluster 16 main start`. `service postgresql start` is blocked by `policy-rc.d` in this image. The role password is `postgres` and the database is `frontend_observability`, matching `packages/server/.env.example`. Copy that file to `packages/server/.env` when it is missing, then from `packages/server` run `npx prisma generate`, `npx prisma db push`, and `npx prisma db seed`. The seed upserts appKey `demo-app-key`.
+- After `start`, the API is http://127.0.0.1:3000/api (`npm run dev:server`), the demo is http://127.0.0.1:5174, and the dashboard is http://127.0.0.1:5173. Pass Vite flags as `npm run dev -w @frontend-observability/demo -- --host 127.0.0.1 --port 5174 --strictPort` (dashboard uses port 5173). `npm run dev:demo` does not forward extra arguments to Vite, and a bare positional argument is treated as the Vite project root.
+- Checks that do not need a browser: `npm run test:sdk` and `npm run build`. `npm run test:e2e` needs Playwright Chromium plus a running database; existing dev servers are reused when they are already up.
